@@ -1,0 +1,446 @@
+Azure Pipelines Tutorial: What Is It, Key Features & Examples
+
+An Azure pipeline has many components, and understanding each part will help you construct a successful pipeline. We will look at the components and features that make up Azure Pipelines, including tasks, templates, parameters, variables, triggers, secrets, agents, artifacts, and environments! Lastly, we will move on to some practical examples showing how to configure a Terraform pipeline in Azure DevOps.
+
+What we will cover:
+
+    What are Azure Pipelines?
+    Azure Pipelines features and concepts
+    Stages in Azure Pipelines
+    Benefits of using Azure Pipelines
+    How to use Azure Pipelines?
+    Tutorial: Creating an Azure DevOps Pipeline
+    Automating CI/CD pipelines with Spacelift
+
+What are Azure Pipelines?
+
+Azure Pipelines is a cloud-based service by Microsoft, part of the Azure DevOps suite, designed to automate the building, testing, and deployment of code projects. It supports continuous integration (CI) and continuous delivery (CD) and can be easily integrated with Azure Repos, Azure Artifacts, Azure Boards, and Azure Test Plans. 
+
+Azure Pipelines manages deployments through pipelines with defined stages, approval controls, and rollback capabilities. It supports multiple programming languages and platforms, including Python, Java, JavaScript, .NET, and Terraform, streamlining the software development lifecycle (SDLC) across diverse environments.
+
+Overall, this tool is aimed at automating the process of building your code projects. This can involve tasks like compiling code, running unit tests, and creating artifacts (executable files or packages) for deployment.
+How does Azure Pipeline work?
+
+Azure Pipelines supports a wide range of functionalities to streamline the software development lifecycle (SDLC), specifically focusing on CI and CD. CI involves frequently merging code changes into a central repository and automatically building and testing those changes. CD automates the deployment of these tested changes to different environments (staging, production).
+
+It provides functionalities for managing deployments through pipelines. You can define stages for different environments, control approvals, and perform rollbacks if necessary. It works with various programming languages, frameworks, and platforms, so you can build and deploy projects written in Python, Java, JavaScript, .NET, and other major languages.
+Azure Pipelines vs GitHub Actions
+
+Azure Pipelines and GitHub Actions are both popular tools for implementing CI/CD pipelines.
+
+Azure Pipelines targets CI/CD workflows, offering comprehensive features for building, testing, and deploying applications. It integrates well with other Azure DevOps services and the wider Azure / Microsoft ecosystem. Azure Pipelines works with various source control systems like Git, SVN, and TFVC. GitHub Actions, on the other hand, is designed specifically for use within GitHub, offering a wide range of built-in actions for common tasks within the GitHub workflow. It excels in automating tasks directly within the GitHub repository and exclusively works with GitHub repositories making it a good choice if your code is held in GitHub already. 
+
+GitHub actions is generally considered easier to learn, especially for those familiar with GitHub workflows. Like Azure pipelines, it uses YAML for configuration and offers a visual editor for simpler pipelines. It has a huge ecosystem of community-created actions available.
+
+Both Azure pipelines and GitHub actions have free and paid tiers available with restrictions on the number of build agents, parallel jobs, and storage.
+Azure Pipelines vs Jenkins
+
+Where Azure Pipelines is a cloud-hosted service as part of the Azure DevOps suite, Jenkins is a free and open-source server-based tool that requires installation and management on your own infrastructure. It is, therefore, suitable for organizations with existing infrastructure and a preference for open-source tools.
+
+However, the benefits of the cloud are lost, such as ease of setup and automatic scaling and updates. Scaling, for example, can quickly become a problem for large-scale deployments, requiring more Jenkins servers. Jenkins requires more technical expertise for setup and configuration and the extensive plugin ecosystem can add complexity but also flexibility.
+
+Where Jenkins has no direct cost, be wary of the investment in infrastructure and ongoing operational maintenance costs.
+
+See other Jenkins alternatives.
+
+Below, you can find the table comparing these three tools:
+	Azure Pipelines 	GitHub Actions 	Jenkins
+Integration 	Integrates well with Azure DevOps services, the wider Azure/Microsoft ecosystem, and other tools 	Designed specifically for use within GitHub, automating tasks directly within the GitHub repository 	Integrates with various tools and services through a vast plugin ecosystem but requires a custom setup
+Source Control 	Works with various source control systems like Git, SVN, and TFVC 	Exclusively works with GitHub repositories 	Works with various source control systems, including Git, SVN, and more
+Configuration 	YAML-based, visual editor available 	YAML-based, visual editor available 	Groovy-based (Jenkinsfile), web UI, and plugins
+Ecosystem 	A comprehensive set of features for CI/CD 	Extensive library of community-created actions 	Extensive plugin ecosystem (can add complexity)
+Hosting and Management 	Cloud-hosted as part of Azure DevOps suite, benefits from cloud ease of setup, scaling, and updates. 	Cloud-hosted within GitHub, benefiting from seamless integration and ease of use within GitHub. 	Server-based requires installation and management on its own infrastructure; scaling can be complex.
+Cost 	Free and paid tiers (limited build agents and storage) 	Free and paid tiers (limited build agents and storage) 	Free (but requires infrastructure and maintenance)
+Azure Pipelines features and concepts
+
+Let’s explore each component of pipeline settings that make up an Azure Pipeline to understand them better.
+1. Tasks
+
+Azure Pipelines tasks are the building blocks that define the actions performed within your build and deployment pipelines. These tasks automate various activities throughout your software development lifecycle (SDLC). Each task has a specific name and may require configuration parameters to define its behavior.
+
+Here is an Azure task that can be used in Azure Pipelines. This task is used to deploy a web application to Azure App Service.
+
+- task: AzureWebApp@1
+
+  inputs:
+
+    azureSubscription: 'Resource Manager Connection'
+
+    appType: 'webApp'
+
+    appName: 'myWebAppName'
+
+    deployToSlotOrASE: true
+
+    resourceGroupName: 'myResourceGroup'
+
+    slotName: 'staging'
+
+    deploymentMethod: 'auto'
+
+You can chain multiple tasks together to create a multi-step workflow for building, testing, and deploying your application. This chain of tasks forms your pipeline.
+
+    Built-in tasks: These Azure Pipeline tasks handle functionalities like code building, testing, packaging, deployment, and utility operations.
+    Community tasks: The Azure DevOps Marketplace provides a vast collection of community-created tasks. These tasks extend the capabilities of pipelines by offering functionalities for specific tools, platforms, and services.
+    Custom tasks: You can create your own custom tasks using scripting languages or extensions to cater to unique needs not met by built-in or community tasks.
+
+2. Templates
+
+Azure Pipeline templates are YAML files containing reusable pipeline definitions or configurations. They can define stages, jobs, steps, variables, and even other nested templates for modularity. You reference templates within your main pipeline YAML file using the extends keyword.
+
+extends: path/to/your/template.yaml
+
+3. Parameters
+
+Azure Pipeline parameters allow you to define variables within your pipeline YAML code that can be provided values at runtime, either manually when triggering a pipeline run or through configurations. Using parameters, you can configure pipelines without hardcoding values, making them adaptable to different environments or scenarios. 
+
+Parameters can be used in conjunction with Azure DevOps variables to manage sensitive information or configurations centrally, and by parameterizing common values, you can avoid duplicating code across different pipeline configurations.
+Types of Azure pipelines parameters
+
+    String: Most common type for text values (e.g., environment names, file paths).
+    Number: Used for numerical values (e.g., port numbers, build numbers).
+    Boolean: True or false values for binary choices (e.g., enable a specific feature).
+    Object: Complex data structures containing key-value pairs (less common).
+    Step: Definition for a specific pipeline step (advanced use case).
+    StepList: Sequence of pipeline steps (advanced use case).
+    Job: Definition for a pipeline job (advanced use case).
+    JobList: Sequence of pipeline jobs (advanced use case).
+    Stage: Definition for a pipeline stage (advanced use case).
+    StageList: Sequence of pipeline stages (advanced use case).
+
+Parameters are declared within the parameters section of your pipeline YAML file.
+
+    Each parameter definition specifies a name, type, and, optionally, a default value.
+
+parameters:
+
+ environment: ''  # String parameter with no default value
+
+ buildNumber: 10   # Number parameter with a default value
+
+ enableTests: true  # Boolean parameter with a default value
+
+    You can reference parameters throughout your pipeline YAML code using the ${{ parameters.<parameter_name> }} syntax.
+    Parameters can be used within variable assignments, task configurations, script arguments, and conditional expressions.
+
+4. Variables
+
+Azure Pipelines variables provide a mechanism to store and manage reusable values within your pipelines. They offer a centralized way to control configurations, secrets, and other data used throughout pipeline definitions.
+Types of Azure Pipelines Variables
+
+    System-defined variables: Predefined variables are automatically set by Azure Pipelines, providing information about the pipeline run (e.g., build number, source branch).
+    User-defined variables: Variables you create and define within your pipeline YAML code or through the Azure Pipelines web interface.
+    Secret variables: A special type of user-defined variable for storing sensitive information like passwords or API keys. These values are encrypted and not exposed in plain text within the pipeline logs.
+
+You can use the variables section of your YAML configuration files to declare variables with names, types (string, bool, etc.), and optional default values. These can then be referenced throughout your pipeline YAML code using the $(variable_name) syntax.
+
+variables:
+
+ buildConfiguration: 'Release'  # Default build configuration
+
+5. Secrets
+
+Azure Pipelines secrets can include passwords, API keys, access tokens, or any other data that should not be exposed in plain text.
+
+Storing secrets separately from your pipeline code prevents them from being accidentally revealed in logs or source code repositories. Managing secrets in a dedicated location (such as Azure Key Vault) allows for better control and access restriction. Team members can collaborate on pipelines without needing to share sensitive information directly, and secrets can be audited on access and usage for enhanced security posture.
+
+Azure Key vault is commonly used with Azure Pipelines as it integrates seamlessly with Azure DevOps. However, you can also directly create a secret in Azure DevOps under the Library -> Variable Group section by providing a key-value pair, which may be preferable for testing or simple pipelines.
+6. Triggers
+
+Azure Pipelines triggers automate the initiation of pipeline runs based on specific events or schedules. They eliminate the need to manually start pipelines for common events, improving efficiency and reducing human error. 
+
+Triggers are essential for CI/CD practices, enabling pipelines to run automatically upon code changes, build completions, or scheduled intervals. By automatically triggering pipeline runs, for example, on a code commit, the developer can receive feedback (i.e., success/failure messages) more quickly.
+
+Continuous Integration (CI) Azure Pipelines triggers:
+
+    Branch filters: Start pipelines when code is pushed to specific branches in your repository (e.g., main branch for new features).
+    Pull request validation: Trigger pipelines to validate code changes upon pull requests creation. (Supported for GitHub repositories)
+    Gated check-in: Enforce code reviews or checks before merging code changes. (Supported for TFVC repositories)
+
+Continuous Delivery (CD) Azure Pipelines triggers:
+
+    Pipeline completion: Start a downstream pipeline upon successful completion of an upstream pipeline.
+    Schedule: Run pipelines based on a predefined schedule (e.g., nightly builds, weekly deployments).
+    External triggers: Integrate with external events from other services or tools to trigger pipelines.
+
+Triggers are defined within your pipeline YAML code using the trigger section.
+
+trigger:
+
+- main  # Trigger pipeline on pushes to the main branch
+
+7. Agents
+
+In Azure Pipelines, agents are the compute resources that execute the jobs defined within your pipeline. They provide the environment where your build, test, and deployment tasks are carried out.
+
+Microsoft-hosted agents:
+
+    Free tier offering with limited parallel jobs.
+    Pre-configured virtual machines with various OS images (e.g., Windows, Ubuntu, macOS) and tools pre-installed.
+    Ideal for getting started or building for common platforms without managing your own infrastructure.
+
+Self-hosted agents:
+
+    You install and manage the agent software on your own infrastructure (e.g., on-premises servers and virtual machines in Azure).
+    Offer greater control over the environment and customization options.
+    Suitable for scenarios requiring specific software installations or access to private resources behind your firewall.
+
+Agents can be grouped together in Agent Pools based on shared characteristics (e.g., OS, capabilities) for easier job assignment.
+
+In your pipeline YAML code, use the pool keyword and specify the name of the agent pool you want to use.
+
+pool:
+
+ vmImage: ubuntu-latest  # Use a pre-configured Microsoft-hosted agent
+
+8. Artifacts
+
+Azure Pipeline artifacts are the files and outputs produced during your build, test, and deployment pipeline stages. They represent the deployable components of your application or the results of intermediate pipeline steps. Artifacts can be used to break down complex pipelines into stages and share artifacts between them, promoting reusability and reducing duplication of effort.
+
+During pipeline execution, tasks can publish artifacts using the Publish Build Artifacts or Publish Pipeline Artifact tasks. These tasks specify the files or folders to be included in the artifact and optionally define a name for the artifact. 
+
+Published artifacts are uploaded to Azure Pipelines artifact storage for temporary retention (typically 14 days by default). Subsequent pipeline jobs or stages can download artifacts using the Download Build Artifacts or Download Pipeline Artifact tasks. These tasks specify the name of the artifact to download and the local directory to store it.
+9. Environments
+
+Environments represent logical targets for deploying your application or infrastructure. They provide a way to group resources and configurations specific to different deployment stages (development, testing, staging, production) or other deployment scenarios.
+
+To set the environment, it can be referenced within the deploy stage:
+
+jobs:
+
+- job: DeployJob
+
+ steps:
+
+ - script: ...  # Build/test scripts here
+
+ deploy:
+
+   environment: 'staging'  # Target the 'staging' environment
+
+or referenced using a variable:
+
+variables:
+
+ targetEnvironment: 'staging'  # Or set this dynamically based on conditions
+
+
+
+jobs:
+
+- job: DeployJob
+
+ steps:
+
+ - script: ...  # Build/test scripts here
+
+ deploy:
+
+   environment: '$(targetEnvironment)'  # Use the environment variable
+
+Stages in Azure Pipelines
+
+Stages in Azure Pipelines represent major divisions within your pipeline that group related tasks and functionalities. They provide a way to structure your pipeline for better readability, maintainability, and control over the execution flow. 
+
+For example, in a Terraform pipeline, this could mirror the workflow with a separate validate, plan, and apply stage. (See how to run Terraform in an Azure DevOps pipeline.)
+
+Stages are typically executed sequentially. You can configure Azure Pipelines stages to run conditionally based on certain criteria, such as the success or failure of previous stages or pipeline triggers.
+
+Stages are defined within your pipeline YAML code using the stages keyword.
+
+stages:
+
+- stage: Build
+
+ jobs:
+
+ - job: BuildJob
+
+   steps:
+
+   - script: ...  # Build scripts here
+
+
+
+- stage: Test
+
+ jobs:
+
+ - job: TestJob
+
+   steps:
+
+   - script: ...  # Test scripts here
+
+
+
+- stage: Deploy
+
+ jobs:
+
+ - job: DeployJob
+
+   steps:
+
+   - script: ...  # Deployment scripts here
+
+💡 You might also like:
+
+    16 DevOps Best Practices to Follow
+    13 Best CI/CD Tools 
+    Common Infrastructure Challenges and How to Solve Them
+
+Benefits of using Azure Pipelines
+
+By leveraging the features of Azure Pipelines effectively, you can achieve faster delivery cycles, higher quality software, and better control over your development workflow.
+
+Here are some of the key benefits of using Azure Pipelines:
+
+    Automated build, test, and deployment process: Azure Pipelines provides a fully automated CI/CD pipeline to build, test, and deploy your code to any target environment (cloud or on-premises),  reducing manual intervention and accelerating software delivery.
+    Scalable and fast: Azure Pipelines can run multiple jobs in parallel, reducing build and deployment times for complex applications. It automatically scales the underlying infrastructure to meet your needs, ensuring speed and efficiency.
+    Customizable pipelines and version control: Pipelines can be defined as code using YAML, allowing version control, transparency, and easier collaboration among developers.
+    Security and compliance: Azure Pipelines provides robust security controls, such as secure secrets management, role-based access control, and audit trails, ensuring your CI/CD processes are secure and compliant.
+    Support for various languages and frameworks: Azure Pipelines works with any programming language (e.g. .NET, Java, Python, Node.js), platform (Windows, Linux, macOS), and cloud provider (Azure, AWS, GCP). This flexibility allows you to use it for any type of application.
+    Wide range of agents: You can choose between using Microsoft-hosted agents (managed by Azure) or self-hosted agents (more control over the environment) based on your requirements.
+    Integration with other DevOps tools: As part of the Azure DevOps suite, Azure Pipelines seamlessly integrates with other Azure services and tools, enabling end-to-end DevOps workflows.
+
+How to use Azure Pipelines?
+
+Azure Pipelines offers two primary interfaces for defining pipelines: YAML and the Classic interface. YAML is the recommended approach for its flexibility and version control capabilities. However, the classic interface remains available for those accustomed to its visual editor.
+Defining pipelines with YAML syntax
+
+Pipelines can be defined using YAML files, which offer flexibility in tailoring the build and deployment process to your specific needs. As a general best practice, your pipelines should be created in code.
+azure pipelines yaml
+
+An Azure Pipeline YAML file typically follows this basic structure, including the components listed previously:
+
+pool:  # Agent pool to run the pipeline on
+
+variables:  # Define variables used throughout the pipeline
+
+stages:  # Stages within the pipeline
+
+- stage: Build  # Example stage name
+
+ jobs:  # Jobs within the stage
+
+ - job: BuildJob  # Example job name
+
+   steps:  # Steps (tasks) to be executed within the job
+
+   - script: ...  # Example script step
+
+Available tasks can be referenced on the official Microsoft docs page, which has an extensive library of tasks for various functionalities like building, testing, deploying, and interacting with other services.
+
+Common Tasks include:
+
+    script: Executes a script or command-line program within the pipeline job.
+    download: Download files or artifacts from external sources.
+    publish: Publishes artifacts (build outputs) to Azure Pipelines artifact storage for sharing across stages or pipelines.
+    checkout: Check out your source code from a version control system (e.g., Git).
+    publishBuildArtifacts (legacy): Uploads build artifacts (use publish for pipeline artifacts).
+
+Defining pipelines with the classing interface
+azure pipelines classic interface
+
+You can also manually configure a build pipeline and release pipeline. To create a pipeline without using YAML code, you can use a visual interface (known as the ‘classic editor’) in Azure DevOps. When the ‘Disable creation of classic build pipelines’ and ‘Disable creation of classic release pipelines’ settings for the projects are turned off, you can find this option in the left hand menu under Pipelines -> New Pipeline -> ‘Use the classic editor’.
+azure pipelines tutorial
+
+Image source
+
+From there, you can find a drag-and-drop editor for defining pipeline stages and tasks and get started quickly with built-in templates for common pipeline scenarios.
+
+Microsoft recommends migrating existing classic pipelines to YAML for better maintainability and future-proofing, as well as more granular control and customization compared to the visual editor.
+Tutorial: Creating an Azure DevOps Pipeline
+
+Let’s create our first pipeline. Follow the steps below to run the Azure DevOps Pipeline:
+
+    Define the CI/CD steps in YAML.
+
+An example YAML Terraform pipeline could look like this:
+
+trigger:
+
+- main
+
+
+
+pool:
+
+ vmImage: 'ubuntu-latest'
+
+stages:
+
+- stage: Plan
+
+ displayName: 'Terraform Plan'
+
+ jobs:
+
+ - job: TerraformPlan
+
+   displayName: 'Terraform Plan'
+
+   steps:
+
+   - task: TerraformInstaller@0
+
+     inputs:
+
+       terraformVersion: 'latest'
+
+   - script: |
+
+       terraform --version
+
+       terraform init -backend-config="storage_account_name=$(storageAccountName)" -backend-config="container_name=$(containerName)" -backend-config="key=$(key)" -backend-config="access_key=$(accessKey)"
+
+       terraform plan -out=tfplan
+
+     displayName: 'Terraform Init and Plan'
+
+- stage: Deploy
+
+ displayName: 'Terraform Apply'
+
+ jobs:
+
+ - job: TerraformApply
+
+   displayName: 'Terraform Apply'
+
+   steps:
+
+   - task: TerraformInstaller@0
+
+     inputs:
+
+       terraformVersion: 'latest'
+
+   - script: |
+
+       terraform --version
+
+       terraform init -backend-config="storage_account_name=$(storageAccountName)" -backend-config="container_name=$(containerName)" -backend-config="key=$(key)" -backend-config="access_key=$(accessKey)"
+
+       terraform apply -auto-approve tfplan
+
+     displayName: 'Terraform Init and Apply'
+
+This pipeline runs on an Ubuntu agent (ubuntu-latest) and is triggered whenever changes are pushed to the main branch.
+
+        TerraformInstaller: Installs the latest version of Terraform on the build agent.
+        Script: Executes Terraform commands to initialize the Terraform working directory, generate a plan, and apply changes to Azure. It initializes Terraform with a backend configuration to store the state in an Azure Storage Account (replace <your-azure-service-connection> with your actual Azure service connection details).
+        TerraformTaskV1: Uses the Terraform task to apply changes to the infrastructure. It first specifies the plan command in the first stage and then an apply stage, utilizing the Azure service connection for authentication (environmentServiceNameAzureRM and backendServiceArm) and the working directory where the Terraform files are located. The commandOptions: '-auto-approve' automatically approves the changes without prompting for confirmation.
+
+    In Azure DevOps, go to “Pipelines” > “Pipelines” and click on “New Pipeline”.
+    Connect the repository that contains your azure-pipelines.yml file.
+    Azure DevOps will automatically detect the YAML configuration file. Review and confirm the configuration, then save.
+    Go back to “Pipelines” and from the list of available pipelines, choose the one that you want to run.
+    Click on “Run pipeline” button at the top right corner.
+    Review the results.
+
+
+Key points:
+
+Azure Pipelines lets you build, test, and deploy your code project as a powerful tool for automating software delivery workflows. It helps developers achieve faster development cycles, improve code quality, and give more control over delivered applications.
